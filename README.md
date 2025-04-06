@@ -10,7 +10,7 @@
 ## Run these commands below to start the app:
 ```shell
     docker compose build
-    docker compose up -d
+    docker compose -f docker-compose-dev.yaml up
 ```
 ### Services will be available on:
 - Backend - http://localhost:3000
