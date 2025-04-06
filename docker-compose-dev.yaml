@@ -1,0 +1,66 @@
+version: '3.8'
+services:
+  backend:
+    container_name: backend
+    image: backend
+    build:
+      context: ./PogodynkaBackend
+      dockerfile: ./Dockerfile
+    command: ["sh", "-c", "npm run db:deploy && npm run dev"]
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
+    depends_on:
+      mysql:
+        condition: service_healthy # Wait for database to be healthy
+    env_file:
+      - ./PogodynkaBackend/.env.prod
+    networks:
+      - weather-forecast
+    volumes:
+      - ./PogodynkaBackend:/app
+      - /app/node_modules
+
+  frontend:
+    container_name: frontend
+    image: frontend
+    build:
+      context: ./PogodynkaFrontend
+      dockerfile: ./Dockerfile
+    command: ["npm", "run", "dev"]
+    ports:
+      - "3001:3001"
+    depends_on:
+      - backend
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./PogodynkaFrontend:/app
+      - /app/node_modules
+    networks:
+      - weather-forecast
+
+  mysql:
+    container_name: mysql_weather
+    image: 'mysql:8.0'
+    environment:
+      MYSQL_DATABASE: weather-app-db
+      MYSQL_ROOT_PASSWORD: root123
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - weather-forecast
+
+volumes:
+  mysql_data:
+
+networks:
+  weather-forecast:
