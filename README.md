@@ -2,7 +2,7 @@
 
 ## Repo initialization
 ```shell
-    git clone https://github.com/kamilekrawczyk404/Pogodynka.git
+    git clone https://github.com/OpEn3DD/Pogodynka.git
     cd Pogodynka
     git submodule update --init --recursive
 ```
